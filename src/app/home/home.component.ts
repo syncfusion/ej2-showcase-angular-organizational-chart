@@ -1,10 +1,10 @@
 import { AfterViewInit, Component, ViewChild, ViewEncapsulation } from '@angular/core';
-import { DiagramComponent, Diagram, TreeInfo, RulerSettingsModel, SnapSettings, SnapSettingsModel, SnapConstraints, ConnectorModel, Connector, ConnectorConstraints, NodeModel, NodeConstraints, StackPanel, randomId, TextElement, ImageElement, PathElement, SelectorModel, SelectorConstraints, UserHandleModel, ScrollSettingsModel, PageSettingsModel, UserHandleEventsArgs, ISelectionChangeEventArgs, IHistoryChangeArgs, IScrollChangeEventArgs, ZoomOptions } from '@syncfusion/ej2-angular-diagrams';
+import { DiagramComponent, Diagram, TreeInfo, RulerSettingsModel, SnapSettings, SnapSettingsModel, SnapConstraints, ConnectorModel, Connector, ConnectorConstraints, NodeModel, NodeConstraints, StackPanel, randomId, TextElement, ImageElement, PathElement, SelectorModel, SelectorConstraints, UserHandleModel, ScrollSettingsModel, PageSettingsModel, UserHandleEventsArgs, ISelectionChangeEventArgs, IHistoryChangeArgs, IScrollChangeEventArgs, ZoomOptions, CommandManagerModel, Keys, KeyModifiers } from '@syncfusion/ej2-angular-diagrams';
 import { MenuItemModel } from '@syncfusion/ej2-navigations';
-import { DropDownDataSources } from '../script/dropdowndatasource';
+import { DropDownDataSources } from '../../script/dropdowndatasource';
 import { DataManager } from '@syncfusion/ej2-data';
-import { DiagramClientSideEvents } from '../script/events';
-import { UtilityMethods } from '../script/utilitymethod';
+import { DiagramClientSideEvents } from '../../script/events';
+import { UtilityMethods } from '../../script/utilitymethod';
 import { AnimationSettingsModel } from '@syncfusion/ej2-angular-popups';
 import { ButtonModel, ButtonComponent, ClickEventArgs, ChangeArgs } from '@syncfusion/ej2-angular-buttons';
 import { MenuEventArgs } from '@syncfusion/ej2-angular-navigations';
@@ -15,6 +15,11 @@ import { ChangeEventArgs as NumericChangeEventArgs } from '@syncfusion/ej2-input
 import { CheckBoxChangeEventArgs } from '@syncfusion/ej2-angular-grids';
 import { SelectEventArgs } from '@syncfusion/ej2-angular-dropdowns';
 import { ChangeEventArgs, SelectedEventArgs, SliderChangeEventArgs, UploaderComponent } from '@syncfusion/ej2-angular-inputs';
+
+  export let expandIcon = {
+    expandIconShape: 'None',
+    collapseIconShape: 'None'
+};
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -37,11 +42,12 @@ export class HomeComponent implements AfterViewInit {
   public clientSideEvents: DiagramClientSideEvents = new DiagramClientSideEvents();
 
   public utilityMethods: UtilityMethods = new UtilityMethods();
+  public zoomLevel: string= "100 %"
 
   public value: string = 'Aharoni';
   public fontSizeValue: string = '12';
   public formatValue: string = 'JPG';
-  public regionsValue: string = 'Page Settings';
+  public regionsValue: string = 'PageSettings';
   public mode: string | undefined;
   public filterPlaceholder: string | undefined;
   public popHeight: string = '350px';
@@ -72,13 +78,6 @@ export class HomeComponent implements AfterViewInit {
     removeUrl: 'https://services.syncfusion.com/angular/production/api/FileUploader/Remove'
   };
 
-  public onOpen(args: any) {
-    var multiCheckbox = (document.getElementById("multiCheckbox") as any).ej2_instances[0];
-    const lis = multiCheckbox.liCollections[0];
-    lis.classList.add('e-disabled');
-    lis.style.pointerEvents = 'auto';
-  }
-
 
   ngOnInit(): void {
     this.mode = 'CheckBox';
@@ -92,179 +91,179 @@ export class HomeComponent implements AfterViewInit {
   public item: Object[] = [
     {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": "parent", "Name": "Maria Anders", "Designation": "Managing Director",
-      "IsExpand": "true", "RatingColor": "#C34444", "ImageUrl": '../../assets/images/maria.png', "EmployeeID": 'SYNC1001', "Team": "TypeScript", "EmailId": 'maria.anders@gmail.com', "PhoneNumber": '0324 - 1819301'
+      "IsExpand": "true", "RatingColor": "#C34444", "ImageUrl": 'assets/images/maria.png', "EmployeeID": 'SYNC1001', "Team": "TypeScript", "EmailId": 'maria.anders@gmail.com', "PhoneNumber": '0324 - 1819301'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 1, "Name": "Ana Trujillo", "Designation": "Project Manager",
       "IsExpand": "false",
-      "RatingColor": "#68C2DE", "ReportingPerson": "parent", "ImageUrl": '../../assets/images/carlos.png', "EmployeeID": 'SYNC1002', "Team": "Java", "EmailId": 'ana.truj@gmail.com', "PhoneNumber": '0324 - 1819302'
+      "RatingColor": "#68C2DE", "ReportingPerson": "parent", "ImageUrl": 'assets/images/carlos.png', "EmployeeID": 'SYNC1002', "Team": "Java", "EmailId": 'ana.truj@gmail.com', "PhoneNumber": '0324 - 1819302'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 2, "Name": "Anto Moreno", "Designation": "Project Lead",
       "IsExpand": "false",
-      "RatingColor": "#93B85A", "ReportingPerson": 1, "ImageUrl": '../../assets/images/daniel.png', "EmployeeID": 'SYNC1003', "Team": "Windows", "EmailId": 'ana.moreno@gmail.com', "PhoneNumber": '0324 - 1819303'
+      "RatingColor": "#93B85A", "ReportingPerson": 1, "ImageUrl": 'assets/images/daniel.png', "EmployeeID": 'SYNC1003', "Team": "Windows", "EmailId": 'ana.moreno@gmail.com', "PhoneNumber": '0324 - 1819303'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 3, "Name": "Thomas Hardy", "Designation": "Senior S/w Engg",
       "IsExpand": "false",
-      "RatingColor": "#68C2DE", "ReportingPerson": 2, "ImageUrl": '../../assets/images/jaime.png', "EmployeeID": 'SYNC1004', "Team": "UX", "EmailId": 'thomos.hardy@gmail.com', "PhoneNumber": '0324 - 1819304'
+      "RatingColor": "#68C2DE", "ReportingPerson": 2, "ImageUrl": 'assets/images/jaime.png', "EmployeeID": 'SYNC1004', "Team": "UX", "EmailId": 'thomos.hardy@gmail.com', "PhoneNumber": '0324 - 1819304'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 4, "Name": "Christina kaff", "Designation": "S/w Engg",
       "IsExpand": "false",
-      "RatingColor": "#93B85A", "ReportingPerson": 3, "ImageUrl": '../../assets/images/felipe.png', "EmployeeID": 'SYNC1005', "Team": "UX", "EmailId": 'chris.kaff@gmail.com', "PhoneNumber": '0324 - 1819305'
+      "RatingColor": "#93B85A", "ReportingPerson": 3, "ImageUrl": 'assets/images/felipe.png', "EmployeeID": 'SYNC1005', "Team": "UX", "EmailId": 'chris.kaff@gmail.com', "PhoneNumber": '0324 - 1819305'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 5, "Name": "Hanna Moos", "Designation": "Project Trainee",
       "IsExpand": "true",
-      "RatingColor": "#D46E89", "ReportingPerson": 4, "ImageUrl": '../../assets/images/helen.png', "EmployeeID": 'SYNC1006', "Team": "Windows", "EmailId": 'hanna.moos@gmail.com', "PhoneNumber": '0324 - 1819306'
+      "RatingColor": "#D46E89", "ReportingPerson": 4, "ImageUrl": 'assets/images/helen.png', "EmployeeID": 'SYNC1006', "Team": "Windows", "EmailId": 'hanna.moos@gmail.com', "PhoneNumber": '0324 - 1819306'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 6, "Name": "Peter Citeaux", "Designation": "S/w Engg",
       "IsExpand": "true",
-      "RatingColor": "#68C2DE", "ReportingPerson": 5, "ImageUrl": '../../assets/images/rene.png', "EmployeeID": 'SYNC1007', "Team": "Java", "EmailId": 'peter.cite@gmail.com', "PhoneNumber": '0324 - 1819307'
+      "RatingColor": "#68C2DE", "ReportingPerson": 5, "ImageUrl": 'assets/images/rene.png', "EmployeeID": 'SYNC1007', "Team": "Java", "EmailId": 'peter.cite@gmail.com', "PhoneNumber": '0324 - 1819307'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 7, "Name": "Martín Kloss", "Designation": "Project Trainee",
       "IsExpand": "false",
-      "RatingColor": "#93B85A", "ReportingPerson": 6, "ImageUrl": '../../assets/images/yoshi.png', "EmployeeID": 'SYNC1008', "Team": "UX", "EmailId": 'martin.kloss@gmail.com', "PhoneNumber": '0324 - 1819308'
+      "RatingColor": "#93B85A", "ReportingPerson": 6, "ImageUrl": 'assets/images/yoshi.png', "EmployeeID": 'SYNC1008', "Team": "UX", "EmailId": 'martin.kloss@gmail.com', "PhoneNumber": '0324 - 1819308'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 8, "Name": "Elizabeth Mary", "Designation": "Project Trainee",
       "IsExpand": "None",
-      "RatingColor": "#93B85A", "ReportingPerson": 6, "ImageUrl": '../../assets/images/yvonne.png', "EmployeeID": 'SYNC1009', "Team": "Java", "EmailId": 'elizabeth.marys@gmail.com', "PhoneNumber": '0324 - 1819309'
+      "RatingColor": "#93B85A", "ReportingPerson": 6, "ImageUrl": 'assets/images/yvonne.png', "EmployeeID": 'SYNC1009', "Team": "Java", "EmailId": 'elizabeth.marys@gmail.com', "PhoneNumber": '0324 - 1819309'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 9, "Name": "Victoria Ash", "Designation": "Senior S/w Engg",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 5, "ImageUrl": '../../assets/images/carlos.png', "EmployeeID": 'SYNC1010', "Team": "React", "EmailId": 'victoria.ash@gmail.com', "PhoneNumber": '0324 - 1819310'
+      "RatingColor": "#D46E89", "ReportingPerson": 5, "ImageUrl": 'assets/images/carlos.png', "EmployeeID": 'SYNC1010', "Team": "React", "EmailId": 'victoria.ash@gmail.com', "PhoneNumber": '0324 - 1819310'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 10, "Name": "Francisco Yang", "Designation": "Senior S/w Engg",
       "IsExpand": "None",
-      "RatingColor": "#93B85A", "ReportingPerson": 3, "ImageUrl": '../../assets/images/maria.png', "EmployeeID": 'SYNC1011', "Team": "Java", "EmailId": 'francisco.yang@gmail.com', "PhoneNumber": '0324 - 1819311'
+      "RatingColor": "#93B85A", "ReportingPerson": 3, "ImageUrl": 'assets/images/maria.png', "EmployeeID": 'SYNC1011', "Team": "Java", "EmailId": 'francisco.yang@gmail.com', "PhoneNumber": '0324 - 1819311'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 17, "Name": "Ann Devon", "Designation": "Project Manager",
       "IsExpand": "false",
-      "RatingColor": "#68C2DE", "ReportingPerson": 25, "ImageUrl": '../../assets/images/yoshi-kenna.png', "EmployeeID": 'SYNC1012', "Team": "UX", "EmailId": 'Ann.devon@gmail.com', "PhoneNumber": '0324 - 1819312'
+      "RatingColor": "#68C2DE", "ReportingPerson": 25, "ImageUrl": 'assets/images/yoshi-kenna.png', "EmployeeID": 'SYNC1012', "Team": "UX", "EmailId": 'Ann.devon@gmail.com', "PhoneNumber": '0324 - 1819312'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 18, "Name": "Roland Mendel", "Designation": "Project Lead",
       "IsExpand": "true",
-      "RatingColor": "#68C2DE", "ReportingPerson": 17, "ImageUrl": '../../assets/images/carlos.png', "EmployeeID": 'SYNC1013', "Team": "UX", "EmailId": 'roland.mendel@gmail.com', "PhoneNumber": '0324 - 1819313'
+      "RatingColor": "#68C2DE", "ReportingPerson": 17, "ImageUrl": 'assets/images/carlos.png', "EmployeeID": 'SYNC1013', "Team": "UX", "EmailId": 'roland.mendel@gmail.com', "PhoneNumber": '0324 - 1819313'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 19, "Name": "Aria Cruz", "Designation": "Senior S/w Engg",
       "IsExpand": "false",
-      "RatingColor": "#93B85A", "ReportingPerson": 18, "ImageUrl": '../../assets/images/daniel.png', "EmployeeID": 'SYNC1014', "Team": "Angular", "EmailId": 'aria.cruz@gmail.com', "PhoneNumber": '0324 - 1819314'
+      "RatingColor": "#93B85A", "ReportingPerson": 18, "ImageUrl": 'assets/images/daniel.png', "EmployeeID": 'SYNC1014', "Team": "Angular", "EmailId": 'aria.cruz@gmail.com', "PhoneNumber": '0324 - 1819314'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 20, "Name": "Martine Rancé", "Designation": "S/w Engg",
       "IsExpand": "None",
-      "RatingColor": "#93B85A", "ReportingPerson": 18, "ImageUrl": '../../assets/images/helen.png', "EmployeeID": 'SYNC1015', "Team": "UX", "EmailId": 'martina.rance@gmail.com', "PhoneNumber": '0324 - 1819315'
+      "RatingColor": "#93B85A", "ReportingPerson": 18, "ImageUrl": 'assets/images/helen.png', "EmployeeID": 'SYNC1015', "Team": "UX", "EmailId": 'martina.rance@gmail.com', "PhoneNumber": '0324 - 1819315'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 21, "Name": "Maria Larsson", "Designation": "Project Trainee",
       "IsExpand": "false",
-      "RatingColor": "#EBB92E", "ReportingPerson": 19, "ImageUrl": '../../assets/images/maria.png', "EmployeeID": 'SYNC1016', "Team": "UX", "EmailId": 'maria.larsson@gmail.com', "PhoneNumber": '0324 - 1819316'
+      "RatingColor": "#EBB92E", "ReportingPerson": 19, "ImageUrl": 'assets/images/maria.png', "EmployeeID": 'SYNC1016', "Team": "UX", "EmailId": 'maria.larsson@gmail.com', "PhoneNumber": '0324 - 1819316'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 22, "Name": "Diego Roel", "Designation": "Project Trainee",
       "IsExpand": "false",
-      "RatingColor": "#D46E89", "ReportingPerson": 21, "ImageUrl": '../../assets/images/jaime.png', "EmployeeID": 'SYNC1017', "Team": "TypeScript", "EmailId": 'diego.roel@gmail.com', "PhoneNumber": '0324 - 1819317'
+      "RatingColor": "#D46E89", "ReportingPerson": 21, "ImageUrl": 'assets/images/jaime.png', "EmployeeID": 'SYNC1017', "Team": "TypeScript", "EmailId": 'diego.roel@gmail.com', "PhoneNumber": '0324 - 1819317'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 23, "Name": "Peter Franken", "Designation": "Project Trainee",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 21, "ImageUrl": '../../assets/images/felipe.png', "EmployeeID": 'SYNC1018', "Team": "JavaScript", "EmailId": 'peter.franken@gmail.com', "PhoneNumber": '0324 - 1819318'
+      "RatingColor": "#D46E89", "ReportingPerson": 21, "ImageUrl": 'assets/images/felipe.png', "EmployeeID": 'SYNC1018', "Team": "JavaScript", "EmailId": 'peter.franken@gmail.com', "PhoneNumber": '0324 - 1819318'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 25, "Name": "Carine Schmitt", "Designation": "Project Manager",
       "IsExpand": "None",
-      "RatingColor": "#EBB92E", "ReportingPerson": "parent", "ImageUrl": '../../assets/images/maria.png', "EmployeeID": 'SYNC1019', "Team": "Java", "EmailId": 'carine.schmit@gmail.com', "PhoneNumber": '0324 - 1819319'
+      "RatingColor": "#EBB92E", "ReportingPerson": "parent", "ImageUrl": 'assets/images/maria.png', "EmployeeID": 'SYNC1019', "Team": "Java", "EmailId": 'carine.schmit@gmail.com', "PhoneNumber": '0324 - 1819319'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 26, "Name": "Paolo Accorti", "Designation": "Project Lead",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 36, "ImageUrl": '../../assets/images/yvonne.png', "EmployeeID": 'SYNC1020', "Team": "React", "EmailId": 'paolo.acc@gmail.com', "PhoneNumber": '0324 - 1819320'
+      "RatingColor": "#D46E89", "ReportingPerson": 36, "ImageUrl": 'assets/images/yvonne.png', "EmployeeID": 'SYNC1020', "Team": "React", "EmailId": 'paolo.acc@gmail.com', "PhoneNumber": '0324 - 1819320'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 27, "Name": "Eduardo Roel", "Designation": "Senior S/w Engg",
       "IsExpand": "true",
-      "RatingColor": "#93B85A", "ReportingPerson": 26, "ImageUrl": '../../assets/images/sergio.png', "EmployeeID": 'SYNC1021', "Team": "JavaScript", "EmailId": 'eduardo.roel@gmail.com', "PhoneNumber": '0324 - 1819321'
+      "RatingColor": "#93B85A", "ReportingPerson": 26, "ImageUrl": 'assets/images/sergio.png', "EmployeeID": 'SYNC1021', "Team": "JavaScript", "EmailId": 'eduardo.roel@gmail.com', "PhoneNumber": '0324 - 1819321'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 28, "Name": "José Pedro", "Designation": "Senior S/w Engg",
       "IsExpand": "true",
-      "RatingColor": "#D46E89", "ReportingPerson": 27, "ImageUrl": '../../assets/images/yoshi-kenna.png', "EmployeeID": 'SYNC1022', "Team": "Java", "EmailId": 'josé.pedro@gmail.com', "PhoneNumber": '0324 - 1819322'
+      "RatingColor": "#D46E89", "ReportingPerson": 27, "ImageUrl": 'assets/images/yoshi-kenna.png', "EmployeeID": 'SYNC1022', "Team": "Java", "EmailId": 'josé.pedro@gmail.com', "PhoneNumber": '0324 - 1819322'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 29, "Name": "André Fonseca", "Designation": "Senior S/w Engg",
       "IsExpand": "true",
-      "RatingColor": "#EBB92E", "ReportingPerson": 28, "ImageUrl": '../../assets/images/joseph.png', "EmployeeID": 'SYNC1023', "Team": "React", "EmailId": 'andré.fonseca@gmail.com', "PhoneNumber": '0324 - 1819323'
+      "RatingColor": "#EBB92E", "ReportingPerson": 28, "ImageUrl": 'assets/images/joseph.png', "EmployeeID": 'SYNC1023', "Team": "React", "EmailId": 'andré.fonseca@gmail.com', "PhoneNumber": '0324 - 1819323'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 30, "Name": "Howard Snyd", "Designation": "S/w Engg",
       "IsExpand": "false",
-      "RatingColor": "#68C2DE", "ReportingPerson": 29, "ImageUrl": '../../assets/images/simon.png', "EmployeeID": 'SYNC1024', "Team": "JavaScript", "EmailId": 'howard.synd@gmail.com', "PhoneNumber": '0324 - 1819324'
+      "RatingColor": "#68C2DE", "ReportingPerson": 29, "ImageUrl": 'assets/images/simon.png', "EmployeeID": 'SYNC1024', "Team": "JavaScript", "EmailId": 'howard.synd@gmail.com', "PhoneNumber": '0324 - 1819324'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 31, "Name": "Manu Pereira", "Designation": "Project Trainee",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 29, "ImageUrl": '../../assets/images/maria.png', "EmployeeID": 'SYNC1025', "Team": "JavaScript", "EmailId": 'manu.periera@gmail.com', "PhoneNumber": '0324 - 1819325'
+      "RatingColor": "#D46E89", "ReportingPerson": 29, "ImageUrl": 'assets/images/maria.png', "EmployeeID": 'SYNC1025', "Team": "JavaScript", "EmailId": 'manu.periera@gmail.com', "PhoneNumber": '0324 - 1819325'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 32, "Name": "Mario Pontes", "Designation": "S/w Engg",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 29, "ImageUrl": '../../assets/images/annette.png', "EmployeeID": 'SYNC1026', "Team": "Java", "EmailId": 'mario.pontes@gmail.com', "PhoneNumber": '0324 - 1819326'
+      "RatingColor": "#D46E89", "ReportingPerson": 29, "ImageUrl": 'assets/images/annette.png', "EmployeeID": 'SYNC1026', "Team": "Java", "EmailId": 'mario.pontes@gmail.com', "PhoneNumber": '0324 - 1819326'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 33, "Name": "Carlos Schmitt", "Designation": "Project Trainee",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 29, "ImageUrl": '../../assets/images/maria.png', "EmployeeID": 'SYNC1027', "Team": "React", "EmailId": 'carlos.schmitt@gmail.com', "PhoneNumber": '0324 - 1819327'
+      "RatingColor": "#D46E89", "ReportingPerson": 29, "ImageUrl": 'assets/images/maria.png', "EmployeeID": 'SYNC1027', "Team": "React", "EmailId": 'carlos.schmitt@gmail.com', "PhoneNumber": '0324 - 1819327'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 34, "Name": "Yoshi Latimer", "Designation": "Project Trainee",
       "IsExpand": "true",
-      "RatingColor": "#D46E89", "ReportingPerson": 29, "ImageUrl": '../../assets/images/daniel.png', "EmployeeID": 'SYNC1028', "Team": "React", "EmailId": 'yoshi.latimer@gmail.com', "PhoneNumber": '0324 - 1819328'
+      "RatingColor": "#D46E89", "ReportingPerson": 29, "ImageUrl": 'assets/images/daniel.png', "EmployeeID": 'SYNC1028', "Team": "React", "EmailId": 'yoshi.latimer@gmail.com', "PhoneNumber": '0324 - 1819328'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 35, "Name": "Patricia Kenna", "Designation": "Project Trainee",
       "IsExpand": "true",
-      "RatingColor": "#EBB92E", "ReportingPerson": 29, "ImageUrl": '../../assets/images/helen.png', "EmployeeID": 'SYNC1029', "Team": "JavaScript", "EmailId": 'patricia.kenna@gmail.com', "PhoneNumber": '0324 - 1819329'
+      "RatingColor": "#EBB92E", "ReportingPerson": 29, "ImageUrl": 'assets/images/helen.png', "EmployeeID": 'SYNC1029', "Team": "JavaScript", "EmailId": 'patricia.kenna@gmail.com', "PhoneNumber": '0324 - 1819329'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 36, "Name": "Helen Bennett", "Designation": "Project Lead",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 25, "ImageUrl": '../../assets/images/rene.png', "EmployeeID": 'SYNC1030', "Team": "Java", "EmailId": 'helen.bennette@gmail.com', "PhoneNumber": '0324 - 1819330'
+      "RatingColor": "#D46E89", "ReportingPerson": 25, "ImageUrl": 'assets/images/rene.png', "EmployeeID": 'SYNC1030', "Team": "Java", "EmailId": 'helen.bennette@gmail.com', "PhoneNumber": '0324 - 1819330'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 65, "Name": "Alej Camino", "Designation": "Project Manager",
       "IsExpand": "false",
-      "RatingColor": "#93B85A", "ReportingPerson": "parent", "ImageUrl": '../../assets/images/carlos.png', "EmployeeID": 'SYNC1031', "Team": "Windows", "EmailId": 'aleg.camino@gmail.com', "PhoneNumber": '0324 - 1819331'
+      "RatingColor": "#93B85A", "ReportingPerson": "parent", "ImageUrl": 'assets/images/carlos.png', "EmployeeID": 'SYNC1031', "Team": "Windows", "EmailId": 'aleg.camino@gmail.com', "PhoneNumber": '0324 - 1819331'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 66, "Name": "Jonas Bergsen", "Designation": "Project Lead",
       "IsExpand": "None",
-      "RatingColor": "#68C2DE", "ReportingPerson": 65, "ImageUrl": '../../assets/images/joseph.png', "EmployeeID": 'SYNC1032', "Team": "JavaScript", "EmailId": 'jonas.bergsen@gmail.com', "PhoneNumber": '0324 - 1819332'
+      "RatingColor": "#68C2DE", "ReportingPerson": 65, "ImageUrl": 'assets/images/joseph.png', "EmployeeID": 'SYNC1032', "Team": "JavaScript", "EmailId": 'jonas.bergsen@gmail.com', "PhoneNumber": '0324 - 1819332'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 67, "Name": "Jose Pavarotti", "Designation": "Project Trainee",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 68, "ImageUrl": '../../assets/images/maria.png', "EmployeeID": 'SYNC1033', "Team": "Windows", "EmailId": 'jose.pavarotti@gmail.com', "PhoneNumber": '0324 - 1819333'
+      "RatingColor": "#D46E89", "ReportingPerson": 68, "ImageUrl": 'assets/images/maria.png', "EmployeeID": 'SYNC1033', "Team": "Windows", "EmailId": 'jose.pavarotti@gmail.com', "PhoneNumber": '0324 - 1819333'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 68, "Name": "Miguel Angel", "Designation": "Senior S/w Engg",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 66, "ImageUrl": '../../assets/images/yoshi.png', "EmployeeID": 'SYNC1034', "Team": "Angular", "EmailId": 'miguel.angel@gmail.com', "PhoneNumber": '0324 - 1819334'
+      "RatingColor": "#D46E89", "ReportingPerson": 66, "ImageUrl": 'assets/images/yoshi.png', "EmployeeID": 'SYNC1034', "Team": "Angular", "EmailId": 'miguel.angel@gmail.com', "PhoneNumber": '0324 - 1819334'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 69, "Name": "Jytte Petersen", "Designation": "Senior S/w Engg",
       "IsExpand": "true",
-      "RatingColor": "#68C2DE", "ReportingPerson": 68, "ImageUrl": '../../assets/images/felipe.png', "EmployeeID": 'SYNC1035', "Team": "Angular", "EmailId": 'jytte.petersen@gmail.com', "PhoneNumber": '0324 - 1819335'
+      "RatingColor": "#68C2DE", "ReportingPerson": 68, "ImageUrl": 'assets/images/felipe.png', "EmployeeID": 'SYNC1035', "Team": "Angular", "EmailId": 'jytte.petersen@gmail.com', "PhoneNumber": '0324 - 1819335'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 70, "Name": "Kloss Perrier", "Designation": "Project Lead",
       "IsExpand": "None",
-      "RatingColor": "#93B85A", "ReportingPerson": 72, "ImageUrl": '../../assets/images/jytte.png', "EmployeeID": 'SYNC1036', "Team": "JavaScript", "EmailId": 'closs.perrier@gmail.com', "PhoneNumber": '0324 - 1819336'
+      "RatingColor": "#93B85A", "ReportingPerson": 72, "ImageUrl": 'assets/images/jytte.png', "EmployeeID": 'SYNC1036', "Team": "JavaScript", "EmailId": 'closs.perrier@gmail.com', "PhoneNumber": '0324 - 1819336'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 71, "Name": "Art Nancy", "Designation": "Senior S/w Engg",
       "IsExpand": "true",
-      "RatingColor": "#D46E89", "ReportingPerson": 27, "ImageUrl": '../../assets/images/rene.png', "EmployeeID": 'SYNC1037', "Team": "Java", "EmailId": 'art.nancy@gmail.com', "PhoneNumber": '0324 - 1819337'
+      "RatingColor": "#D46E89", "ReportingPerson": 27, "ImageUrl": 'assets/images/rene.png', "EmployeeID": 'SYNC1037', "Team": "Java", "EmailId": 'art.nancy@gmail.com', "PhoneNumber": '0324 - 1819337'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 72, "Name": "Pascal Cartrain", "Designation": "Project Lead",
       "IsExpand": "true",
-      "RatingColor": "#EBB92E", "ReportingPerson": 65, "ImageUrl": '../../assets/images/renete.png', "EmployeeID": 'SYNC1038', "Team": "Vue", "EmailId": 'pascal.cartrain@gmail.com', "PhoneNumber": '0324 - 1819338'
+      "RatingColor": "#EBB92E", "ReportingPerson": 65, "ImageUrl": 'assets/images/renete.png', "EmployeeID": 'SYNC1038', "Team": "Vue", "EmailId": 'pascal.cartrain@gmail.com', "PhoneNumber": '0324 - 1819338'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 73, "Name": "Liz Nixon", "Designation": "Senior S/w Engg",
       "IsExpand": "false",
-      "RatingColor": "#68C2DE", "ReportingPerson": 68, "ImageUrl": '../../assets/images/maria.png', "EmployeeID": 'SYNC1039', "Team": "JavaScript", "EmailId": 'liz.nixon@gmail.com', "PhoneNumber": '0324 - 1819339'
+      "RatingColor": "#68C2DE", "ReportingPerson": 68, "ImageUrl": 'assets/images/maria.png', "EmployeeID": 'SYNC1039', "Team": "JavaScript", "EmailId": 'liz.nixon@gmail.com', "PhoneNumber": '0324 - 1819339'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 89, "Name": "Georg Pipps", "Designation": "Senior S/w Engg",
       "IsExpand": "None",
-      "RatingColor": "#EBB92E", "ReportingPerson": "parent", "ImageUrl": '../../assets/images/rene.png', "EmployeeID": 'SYNC1040', "Team": "Java", "EmailId": 'georg.pipps@gmail.com', "PhoneNumber": '0324 - 1819340'
+      "RatingColor": "#EBB92E", "ReportingPerson": "parent", "ImageUrl": 'assets/images/rene.png', "EmployeeID": 'SYNC1040', "Team": "Java", "EmailId": 'georg.pipps@gmail.com', "PhoneNumber": '0324 - 1819340'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 30, "Name": "Isabel Castro", "Designation": "Project Trainee",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 89, "ImageUrl": '../../assets/images/jhon.png', "EmployeeID": 'SYNC1041', "Team": "Windows", "EmailId": 'isabel.castro@gmail.com', "PhoneNumber": '0324 - 1819341'
+      "RatingColor": "#D46E89", "ReportingPerson": 89, "ImageUrl": 'assets/images/jhon.png', "EmployeeID": 'SYNC1041', "Team": "Windows", "EmailId": 'isabel.castro@gmail.com', "PhoneNumber": '0324 - 1819341'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 90, "Name": "Rene Phillips", "Designation": "Project Trainee",
       "IsExpand": "false",
-      "RatingColor": "#68C2DE", "ReportingPerson": 89, "ImageUrl": '../../assets/images/jytte.png', "EmployeeID": 'SYNC1042', "Team": "JavaScript", "EmailId": 'rene.phillips@gmail.com', "PhoneNumber": '0324 - 1819342'
+      "RatingColor": "#68C2DE", "ReportingPerson": 89, "ImageUrl": 'assets/images/jytte.png', "EmployeeID": 'SYNC1042', "Team": "JavaScript", "EmailId": 'rene.phillips@gmail.com', "PhoneNumber": '0324 - 1819342'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 91, "Name": "Lúcia Carvalho", "Designation": "Project Trainee",
       "IsExpand": "None",
-      "RatingColor": "#93B85A", "ReportingPerson": 89, "ImageUrl": '../../assets/images/yoshi-kenna.png', "EmployeeID": 'SYNC1043', "Team": "Java", "EmailId": 'lúcia.carvalho@gmail.com', "PhoneNumber": '0324 - 1819343'
+      "RatingColor": "#93B85A", "ReportingPerson": 89, "ImageUrl": 'assets/images/yoshi-kenna.png', "EmployeeID": 'SYNC1043', "Team": "Java", "EmailId": 'lúcia.carvalho@gmail.com', "PhoneNumber": '0324 - 1819343'
     }, {
       "Fill": "white", "StrokeColor": "black", "FontFamily": "Arial", "IsBold": false, "IsItalic": false, "Decoration": "None", "FontSize": 12, "color": "black", "Id": 92, "Name": "Horst Kloss", "Designation": "Project Trainee",
       "IsExpand": "None",
-      "RatingColor": "#D46E89", "ReportingPerson": 89, "ImageUrl": '../../assets/images/helen.png', "EmployeeID": 'SYNC1044', "Team": "Angular", "EmailId": 'horst.kloss@gmail.com', "PhoneNumber": '0324 - 1819344'
+      "RatingColor": "#D46E89", "ReportingPerson": 89, "ImageUrl": 'assets/images/helen.png', "EmployeeID": 'SYNC1044', "Team": "Angular", "EmailId": 'horst.kloss@gmail.com', "PhoneNumber": '0324 - 1819344'
     },
   ];
   // To get the node userhandle.
@@ -289,7 +288,7 @@ export class HomeComponent implements AfterViewInit {
   }
 
   // Event handler triggered when the diagram name is changed.
-  public diagramNameChange(args: MouseEvent): void {
+  public diagramNameChange(args: FocusEvent): void {
     (document.getElementById('diagramName') as any).innerHTML = (document.getElementById('diagramEditable') as HTMLInputElement).value;
     document.getElementsByClassName('db-diagram-name-container')[0].classList.remove('db-edit-name');
     (document.getElementById("exportfileName") as any).value = (document.getElementById('diagramName') as any).innerHTML;
@@ -326,7 +325,7 @@ export class HomeComponent implements AfterViewInit {
     this.diagram?.zoomTo({ type: 'ZoomOut', zoomFactor: 0.2 });
   };
 
-  public position: any = { X: 'right', Y: 'top' };
+  public position: any = { X: 'right', Y: 'center' };
 
   public zoomMenuItems = [
     { text: 'Zoom In' },
@@ -393,6 +392,11 @@ export class HomeComponent implements AfterViewInit {
     }
   }
 
+  public updateZoomLevel(args : any) {
+    this.utilityMethods.zoomChange(args);
+
+  }
+
   //Selected Items to enable userhandles
   public selectedItems: SelectorModel = {
     constraints: SelectorConstraints.All,
@@ -418,8 +422,49 @@ export class HomeComponent implements AfterViewInit {
       if (!options.hasSubTree) {
         options.type = 'Right';
       }
-    }
+    },
+    enableAnimation: false,
   };
+
+  public commandManager: CommandManagerModel = {
+    commands: [
+      {
+        name: 'new',
+        canExecute: function () {
+          return true;
+        },
+        execute: function () {
+          let diagram = (document.getElementById('diagram') as any).ej2_instances[0];
+          diagram.clear();
+        },
+        gesture: { key: Keys.N, keyModifiers: KeyModifiers.Shift },
+      },
+      {
+        name: 'open',
+        canExecute: function () {
+          return true;
+        },
+        execute: function () {
+          (document.getElementsByClassName('e-file-select-wrap')[0].querySelector('button') as any).click();
+        },
+        gesture: { key: Keys.O, keyModifiers: KeyModifiers.Control },
+      },
+      {
+        name: 'save',
+        canExecute: function () {
+          return true;
+        },
+        execute: function () {
+        let diagram = (document.getElementById('diagram') as any).ej2_instances[0];
+        let data: any = diagram.saveDiagram();
+        let utilityMethods: UtilityMethods = new UtilityMethods();
+        utilityMethods.download(data);
+        },
+        gesture: { key: Keys.S, keyModifiers: KeyModifiers.Control },
+      },
+    ]
+  }
+
 
   //Nodedefaults to customize node
   public nodeDefaults(obj: NodeModel): NodeModel {
@@ -434,7 +479,7 @@ export class HomeComponent implements AfterViewInit {
       iconColor: 'white',
       cornerRadius: 10,
       borderColor: 'black',
-      shape: 'None',
+      shape: expandIcon.expandIconShape as any,
       fill: 'black',
       offset: { x: 0.5, y: 1.2 },
       pathData: 'M16.261993,32L16.359985,31.934998 16.454987,32 16.48999,31.846008 32,20.705013 32,12.254999 16.359985,23.539014 0,12.254999 0,20.705013 15.77301,31.846008z'
@@ -445,7 +490,7 @@ export class HomeComponent implements AfterViewInit {
       iconColor: 'white',
       cornerRadius: 10,
       borderColor: 'black',
-      shape: 'None',
+      shape: expandIcon.collapseIconShape as any,
       fill: 'black',
       offset: { x: 0.5, y: 1.2 },
       pathData: 'M16.261993,0L16.359985,0.065002445 16.454987,0 16.48999,0.15399169 32,11.294986 32,19.745 16.359985,8.5149861 0,19.745 0,11.294986 16.22699,0.15399169z'
@@ -501,7 +546,7 @@ export class HomeComponent implements AfterViewInit {
     let text = new TextElement();
     text.content = ((obj as any).data).Name;
     text.style.color = (obj as any).data.color;
-    text.style.bold = (obj as any).addInfo.IsBold;
+    text.style.bold = (obj as any).data.IsBold;
     text.style.italic = (obj as any).data.IsItalic;
     text.style.textDecoration = (obj as any).data.Decoration;
     text.style.fontSize = (obj as any).data.FontSize;
@@ -515,7 +560,7 @@ export class HomeComponent implements AfterViewInit {
     desigText.margin = { left: 0, right: 0, top: 5, bottom: 0 };
     desigText.content = ((obj as any).data).Designation;
     desigText.style.color = (obj as any).data.color;
-    desigText.style.bold = (obj as any).addInfo.IsBold;
+    desigText.style.bold = (obj as any).data.IsBold;
     desigText.style.italic = (obj as any).data.IsItalic;
     desigText.style.textDecoration = (obj as any).data.Decoration;
     desigText.style.fontSize = (obj as any).data.FontSize;
@@ -529,11 +574,43 @@ export class HomeComponent implements AfterViewInit {
     innerStack.children = [text, desigText];
 
     // Add the line to the innerStack, and the innerStack to the content stack
-    innerStack.children = [line, text, desigText];
+    innerStack.children = [text, desigText, line];
     content.children = [image, innerStack];
 
     return content;
   };
+
+   // Triggers before rendering menu item.
+  public beforeItemRender = (args: any) => {
+    var shortCutText = this.getShortCutKey(args.item.text);
+    if (shortCutText) {
+      var shortCutSpan = document.createElement('span');
+      var text = args.item.text;
+      shortCutSpan.textContent = shortCutText;
+      shortCutSpan.style.pointerEvents = 'none';
+      args.element.appendChild(shortCutSpan);
+      shortCutSpan.setAttribute('class', 'db-shortcut');
+    }
+  }
+  // To render the shortcut keys for menu items.
+  public getShortCutKey(menuItem: any) {
+    var shortCutKey = navigator.platform.indexOf('Mac') > -1 ? 'Cmd' : 'Ctrl';
+    switch (menuItem) {
+      case 'New':
+        shortCutKey = 'Shift' + ' + N';
+        break;
+      case 'Open':
+        shortCutKey = shortCutKey + ' + O';
+        break;
+      case 'Save':
+        shortCutKey = shortCutKey + ' + S';
+        break;
+      default:
+        shortCutKey = '';
+        break;
+    }
+    return shortCutKey;
+  }
 
   public onUserHandleMouseDown(args: UserHandleEventsArgs) {
     this.clientSideEvents.onUserHandleMouseDown(args);
@@ -551,21 +628,12 @@ export class HomeComponent implements AfterViewInit {
   //Method to do opertation of the menu bar
   public menuSelect(args: MenuEventArgs) {
     let options: string | undefined = args.item.text;
-    let zoomSlider = (document.getElementById("zooming") as any).ej2_instances[0];
+    let zoomSlider = (document.getElementById("zoomslider") as any).ej2_instances[0];
     let exportDialog = (document.getElementById("exportDialog") as any).ej2_instances[0];
     switch (options) {
       case 'New':
         (this.diagram as any).clear();
-        (this.diagram as any).dataSourceSettings.dataSource.dataSource.json = [];
-        var object;
-        object = {
-          item: { text: 'No image with subtext' },
-          value: ['Name', 'Desig'],
-        };
-        this.utilityMethods.modifyNodeTemplate(object);
-        this.clientSideEvents.addParent();
-        this.clientSideEvents.historyChange();
-    
+        ( document.getElementById('overview')as any).ej2_instances[0].refresh();
         break;
       case 'Open':
         (document.getElementsByClassName('e-file-select-wrap')[0].querySelector('button') as any).click();
@@ -667,6 +735,7 @@ export class HomeComponent implements AfterViewInit {
       (outerContainer as any).style.fill = fillColor;
       diagram.selectedItems.nodes[i].addInfo.fill = fillColor;
       diagram.selectedItems.nodes[i].data.Fill = fillColor;
+      diagram.selectedItems.nodes[i].style.Fill = fillColor;
     }
     diagram.dataBind();
   }
@@ -679,6 +748,7 @@ export class HomeComponent implements AfterViewInit {
       let outerContainer = document.getElementById(diagram.selectedItems.nodes[i].id + '_outerstack');
       (outerContainer as any).style.stroke = strokeColor;
       diagram.selectedItems.nodes[i].data.StrokeColor = strokeColor;
+      diagram.selectedItems.nodes[i].style.StrokeColor = strokeColor;
     }
     diagram.dataBind();
   }
@@ -784,14 +854,14 @@ export class HomeComponent implements AfterViewInit {
   public export() {
     var diagram = (document.getElementById("diagram") as any).ej2_instances[0];
     var exportDialog = (document.getElementById("exportDialog") as any).ej2_instances[0];
+    var exportFormatDropdown = (document.getElementById("exportFormat") as any).ej2_instances[0];
+    var exportFormat = exportFormatDropdown.value;
     var hOffset = diagram.scrollSettings.horizontalOffset;
     var vOffset = diagram.scrollSettings.verticalOffset;
     var zoom = diagram.scrollSettings.currentZoom;
-    localStorage.setItem('export', diagram.saveDiagram());
-    diagram.loadDiagram(localStorage.getItem('export'));
     diagram.exportDiagram({
       fileName: (document.getElementById("exportfileName") as any).value,
-      format: (document.getElementById("exportFormat") as any).value,
+      format: exportFormat,
       mode: 'Download'
     });
     if (zoom <= 0.45) {
@@ -813,31 +883,35 @@ export class HomeComponent implements AfterViewInit {
   //Button to search the nodes
   public search() {
     const selectedValue = (document.getElementById('searchDropDown') as any).textContent;
-    const searchText = (document.getElementById('searchBox') as any).value.replace(/\s+/g, '').toLowerCase();
+    const searchText = (document.getElementById('searchBox') as any).value.trim().toLowerCase();
     let diagram = (document.getElementById("diagram") as any).ej2_instances[0];
     this.matchingNodes = [];
     this.currentIndex = 0;
     diagram.clearSelection();
-    const searchWords = searchText.split(/\s+/); // Split the searchText into individual words
-    const searchRegex = new RegExp(searchWords.map((word: any) => `\\b${word}\\b`).join('.*'), 'i'); // Create a regular expression with 'i' flag to ignore case and match all words
-    this.matchingNodes = diagram.nodes.filter((node: { data: { Name: string; EmployeeID: string; Designation: string; Team: string; EmailId: string; PhoneNumber: string; }; }) => {
-      if (selectedValue === 'Name' && searchRegex.test(node.data.Name.replace(/\s+/g, '').toLowerCase())) {
-        return true;
-      } else if (selectedValue === 'Employee ID' && searchRegex.test(node.data.EmployeeID.replace(/\s+/g, '').toLowerCase())) {
-        return true;
-      } else if (selectedValue === 'Designation' && searchRegex.test(node.data.Designation.replace(/\s+/g, '').toLowerCase())) {
-        return true;
-      } else if (selectedValue === 'Team' && searchRegex.test(node.data.Team.replace(/\s+/g, '').toLowerCase())) {
-        return true;
-      } else if (selectedValue === 'Email ID' && searchRegex.test(node.data.EmailId.replace(/\s+/g, '').toLowerCase())) {
-        return true;
-      } else if (selectedValue === 'Phone Number' && searchRegex.test(node.data.PhoneNumber.replace(/\s+/g, '').toLowerCase())) {
-        return true;
-      } else {
-        return false;
+    if (!searchText) return; // Skip if empty
+    this.matchingNodes = diagram.nodes.filter((node:{ data : any}) => {
+      const data: any = node.data;
+      const fieldValue = (field: any) => data[field] ? data[field].toString().toLowerCase().replace(/\s+/g, '') : '';
+       switch (selectedValue) {
+          case 'Name':
+              return fieldValue('Name').includes(searchText);
+          case 'Employee ID':
+              return fieldValue('EmployeeID').includes(searchText);
+          case 'Designation':
+              return fieldValue('Designation').includes(searchText);
+          case 'Team':
+              return fieldValue('Team').includes(searchText);
+          case 'Email ID':
+              return fieldValue('EmailId').includes(searchText);
+          case 'Phone Number':
+              return fieldValue('PhoneNumber').includes(searchText);
+          default:
+              return false;
       }
     });
-    diagram.select([this.matchingNodes[this.currentIndex]]);
+     if (this.matchingNodes.length > 0) {
+            diagram.select([this.matchingNodes[this.currentIndex]]);
+        } 
   }
 
   //Button to show the previous node with the same choice
@@ -889,7 +963,6 @@ export class HomeComponent implements AfterViewInit {
     fileUploadDialog.hide();
   }
   public downloadFormatChange(args: ChangeArgs): void {
-    debugger
     if (args.event) {
       let target: HTMLElement = args.event.target as HTMLElement;
       if (target.id === 'csvFormat') {
@@ -1155,6 +1228,15 @@ export class HomeComponent implements AfterViewInit {
     (this.diagram as any).doLayout();
   }
 
+  public addAssistant() {
+    this.clientSideEvents.addChild();
+  }
+
+  public reLayout() {
+    let diagram = (document.getElementById("diagram") as any).ej2_instances[0];
+    diagram.doLayout();
+  }
+
   public insertOrRemovePicture(args: SelectEventArgs) {
     this.utilityMethods.insertOrRemovePicture(args);
   }
@@ -1170,17 +1252,38 @@ export class HomeComponent implements AfterViewInit {
     let toolbarObj = (document.getElementById("toolbarEditor") as any).ej2_instances[0];
     (document.getElementById('overview-container') as any).style.position = '';
     (document.getElementById('overview-container') as any).style.zIndex = '-1';
-    toolbarObj.items[toolbarObj.items.length - 1].cssClass = toolbarObj.items[toolbarObj.items.length - 1].cssClass.replace('active', '');
+    toolbarObj.items[toolbarObj.items.length - 2].cssClass = toolbarObj.items[toolbarObj.items.length - 2].cssClass.replace('active', '');
   }
 
   // Triggers when the JSON file is uploaded successfully. 
   public onUploadSuccess: EmitType<Object> = (args: any) => {
-    let file1: { [key: string]: Object } = args.file as { [key: string]: Object };
-    let file: Blob = (file1 as any).rawFile as Blob;
-    var reader = new FileReader();
-    reader.readAsText(file);
-    reader.onloadend = this.loadDiagram.bind(this);
+    (document.getElementsByClassName('sb-content-overlay')[0] as HTMLDivElement).style.display = 'none';
+    if (args.operation !== 'remove') {
+        let file1: { [key: string]: Object } = args.file as { [key: string]: Object };
+        let file: Blob = (file1 as any).rawFile as Blob;
+        (this.utilityMethods as any).fileType = (file1 as any).type.toString();
+        let reader: FileReader = new FileReader();
+        if ((this.utilityMethods as any).fileType.toLowerCase() === 'jpg' || (this.utilityMethods as any).fileType.toLowerCase() === 'png') {
+            reader.readAsDataURL(file);
+            reader.onloadend = this.setImage.bind(this);
+        } else {
+            reader.readAsText(file);
+            if ((this.utilityMethods as any).fileType === 'json') {
+                reader.onloadend = this.loadDiagram.bind(this);
+            } else {
+              (this.utilityMethods as any).isUploadSuccess = true;
+                reader.onloadend = (this.utilityMethods as any).readFile.bind((this.utilityMethods as any));
+            }
+        }
+        this.clearUploader();
+    }
   }
+
+    public  clearUploader(): void {
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) {
+          fileInput.value = '';  
+    }}
 
   // Triggers when the image is uploaded successfully.
   public onPictureUploadSuccess: EmitType<Object> = (args: any) => {
@@ -1192,6 +1295,13 @@ export class HomeComponent implements AfterViewInit {
     };
     reader.readAsDataURL(file.rawFile);
   }
+
+  public setImage(event: ProgressEvent): void {
+    //(document.getElementsByClassName('sb-content-overlay')[0] as HTMLDivElement).style.display = 'none';
+    var diagram = (document.getElementById("diagram") as any).ej2_instances[0];
+    let node: NodeModel = diagram.selectedItems.nodes[0];
+    node.shape = { type: 'Image', source: (event.target as FileReader).result as string, align: 'None' };
+}
 
   //Method to load diagram
   public loadDiagram(event: ProgressEvent): void {
@@ -1220,6 +1330,8 @@ function applyBase64AsImageUrl(base64String: any) {
   diagram.dataSourceSettings.dataSource.dataSource.json.find((x: { Id: any; }) => x.Id == selectedNode.data.Id).ImageUrl = base64String;
   var imageTag = document.getElementById(selectedNode.id + '_picimage');
   (imageTag as any).href.baseVal = base64String;
+  let utilityMethods = new UtilityMethods();
+  utilityMethods.addImageToWrapper(selectedNode,undefined,base64String);
 }
 
 // To get the tooltip content of node.

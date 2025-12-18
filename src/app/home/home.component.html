@@ -2,29 +2,38 @@
     <div class='header navbar'>
         <div class="db-header-container">
             <div class="db-diagram-name-container">
-                <span id='diagramName'
-                    style="width:250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-                    class="db-diagram-name" (click)='renameDiagram($event)'>Untitled Diagram</span>
-                <input id='diagramEditable' type="text" class="db-diagram-name"
-                    (keydown)='diagramNameKeyDown($event)' />
+                <span id='diagramName' class="db-diagram-name" (click)='renameDiagram($event)'>Untitled Diagram</span>
+                <input id='diagramEditable' type="text" class="db-diagram-name" (keydown)='diagramNameKeyDown($event)'
+                    (focusout)='diagramNameChange($event)' />
                 <span id='diagramreport' class="db-diagram-name db-save-text"></span>
             </div>
             <div class='db-menu-container'>
                 <div class="menu-control">
-                    <ejs-menu [items]='dropDownDataSources.fileMenuItems' (select)='menuSelect($event)'></ejs-menu>
+                    <ejs-menu [items]='dropDownDataSources.fileMenuItems' (select)='menuSelect($event)'  (beforeItemRender)="beforeItemRender($event)"></ejs-menu>
                 </div>
             </div>
         </div>
+
         <div class='db-toolbar-editor'>
             <div class='db-toolbar-container'>
                 <ejs-toolbar overflowMode='Scrollable' id="toolbarEditor" (clicked)="toolbarClick($event)">
                     <e-items>
+                        <e-item prefixIcon="sf-icon-save tb-icons" tooltipText="Save Diagram"
+                            cssClass="tb-item-start tb-item-save"></e-item>
+                        <e-item prefixIcon="sf-icon-open tb-icons" tooltipText="Open Diagram"
+                            cssClass="tb-item-middle tb-item-open"></e-item>
+                        <e-item prefixIcon="sf-icon-print tb-icons" tooltipText="Print Diagram"
+                            cssClass="tb-item-middle tb-item-print"></e-item>
+                        <e-item prefixIcon="sf-icon-export tb-icons" tooltipText="Export Diagram"
+                            cssClass="tb-item-end tb-item-export"></e-item>
+                        <e-item type='Separator'></e-item>
                         <e-item prefixIcon='sf-icon-undo tb-icons' tooltipText='Undo'
                             cssClass='tb-item-start tb-item-undo'></e-item>
                         <e-item prefixIcon='sf-icon-redo tb-icons' tooltipText='Redo'
                             cssClass='tb-item-end tb-item-redo'>
                         </e-item>
                         <e-item type='Separator'></e-item>
+
                         <e-item tooltipText='Font Family' cssClass='tb-item-start item-singleSelect'>
                             <ng-template #template>
                                 <ejs-dropdownlist id="fontFamily" #fontFamily
@@ -82,54 +91,6 @@
                         <e-item prefixIcon='db-overview' tooltipText='Overview' cssClass='tb-item-end db-overview'>
                         </e-item>
                         <e-item type='Separator'></e-item>
-                        <e-item tooltipText="picture">
-                            <ng-template #template>
-                                <div class="col-xs-4 db-col-right" style="width: 100px;margin-left: 8px;">
-                                    <button ejs-dropdownbutton id="pictureDropdown"
-                                        [items]='dropDownDataSources.pictureItems' style="border-radius: 0%;"
-                                        iconCss='sf-icon-insert_image' content="Picture" width="100px" popupWidth="160"
-                                        (select)="insertOrRemovePicture($event)"></button>
-                                </div>
-                            </ng-template>
-                        </e-item>
-                        <e-item tooltipText="Multi Select">
-                            <ng-template #template>
-                                <div class="col-xs-6 db-col-left"
-                                    style="width: 140px;margin-left: 25px;margin-bottom: 5px;">
-                                    <ejs-multiselect id='multiCheckbox' #checkbox
-                                        [dataSource]='dropDownDataSources.fieldsMultiListItems'
-                                        [showClearButton]="false" [showDropDownIcon]=" true"
-                                        [fields]='dropDownDataSources.checkBoxFields' placeholder='Fields' [mode]='mode'
-                                        [filterBarPlaceholder]='filterPlaceholder' [value]='multiCheckboxValue'
-                                        (open)="onOpen($event)" [popupHeight]='popHeight'
-                                        (change)="checkboxmodifyNodeTemplate($event)">
-                                    </ejs-multiselect>
-                                </div>
-                            </ng-template>
-                        </e-item>
-                        <e-item tooltipText="Search">
-                            <ng-template #template>
-                                <div class="col-xs-4 db-col-right" style="margin-left: 10px;margin-bottom: 10px;">
-                                    <button ejs-button cssclass='db-search-btn' iconCss='e-icons e-search'
-                                        id="searchBtn" style="font-size: 10px;" (click)="searchBtn()">Search</button>
-                                </div>
-                            </ng-template>
-                        </e-item>
-                        <e-item type='Separator'></e-item>
-                        <e-item>
-                            <ng-template #template>
-                                <div class="col-xs-6 db-col-left" style="margin-bottom: 5px;"></div>
-                                <button ejs-dropdownbutton id="zooming" [items]='zoomMenuItems'
-                                    [content]="zoomContent()" (select)='zoomChange($event)'></button>
-                            </ng-template>
-                        </e-item>
-                        <e-item>
-                            <ng-template #template>
-                                <div class="db-toolbar-hide-btn" style=" margin-bottom: 5px;margin-left: 240px">
-                                    <button ejs-button id="hide" cssClass="db-btn-primary" (click)="btnHideToolbar($event)" iconCss='sf-icon-properties'></button>
-                                </div>
-                            </ng-template>
-                        </e-item>
                     </e-items>
                 </ejs-toolbar>
             </div>
@@ -139,33 +100,27 @@
         <div class='main-content' role='main'>
             <div class="db-diagram-container" id="">
                 <div id="diagramContainerDiv" class='db-current-diagram-container'>
-                    <ejs-diagram #diagram id="diagram" width="100%" height="635px" [layout]="layout"
+                    <ejs-diagram #diagram id="diagram" width="100%" height="1000px" [layout]="layout"
                         [dataSourceSettings]='data' [rulerSettings]="rulerSettings" [snapSettings]="snapSettings"
                         [getNodeDefaults]='nodeDefaults' [getConnectorDefaults]='connDefaults'
                         (selectionChange)="selectionChange($event)" [setNodeTemplate]='setNodeTemplate'
                         (created)="created($event)" [selectedItems]="selectedItems" [scrollSettings]="scrollSettings"
                         (scrollChange)="scrollChange($event)" [pageSettings]="pageSettings"
-                        (historyChange)="historyChange($event)" (onUserHandleMouseDown)="onUserHandleMouseDown($event)">
+                        (historyChange)="historyChange($event)" (onUserHandleMouseDown)="onUserHandleMouseDown($event)"
+                        [commandManager]="commandManager">
                     </ejs-diagram>
                 </div>
             </div>
             <div class='db-property-editor-container' id="propertyPanel" style="overflow:auto;border-left: 1px solid #CBCBCB;
-            border-top: 1px solid #CBCBCB;height:635px;">
-                <div id="generalDiagramContainer" class="db-general-diagram-prop-container" style="padding-bottom: -200px;">
+            border-top: 1px solid #CBCBCB;height: 1000px">
+                <div id="generalDiagramContainer" class="db-general-diagram-prop-container"
+                    style="padding-bottom: -200px;">
                     <div id='diagramPropertyContainer' class="db-diagram-prop-container">
                         <div class="row db-prop-header-text" style="margin-left: 15px;margin-top: 10px;">
                             Properties
                         </div>
                         <div class="row property-panel-content" id="appearance">
                             <div class="row" style="padding-top: 10px">
-                                <div class="row db-prop-row db-prop-header-text">
-                                    Import
-                                </div>
-                                <div class="row db-prop-row" style="height:28px">
-                                    <button ejs-button id="btnImportData" content="Import Data"
-                                        cssClass="db-btn-primary" (click)="btnImportClick($event)">
-                                    </button>
-                                </div>
                                 <div class="row row-header" style="padding-top: 10px">
                                     Orientation
                                 </div>
@@ -200,7 +155,7 @@
                                             style="background-image: url(https://ej2.syncfusion.com/javascript/demos/src/diagram/patternimages/Pattern_2.png); margin: 0px 3px">
                                         </div>
                                         <div class="image-pattern-style  e-selected-pattern-style" id="pattern5"
-                                            onclick="subTreeClick($event)"
+                                            (click)="subTreeClick($event)"
                                             style="background-image: url(https://ej2.syncfusion.com/javascript/demos/src/diagram/patternimages/Pattern_5.png); margin: 0px 3px">
                                         </div>
                                     </div>
@@ -222,92 +177,133 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row row-header" style="padding-top: 10px">
-                                    Templates
-                                </div>
-                                <div id="template">
-                                    <div class="row db-prop-row">
-                                        <div class="col-xs-6 org-pattern-parent">
-                                            <div id="orgPattern1" class="org-pattern-style"
-                                                (click)="templateClick($event)">
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6 org-pattern-parent">
-                                            <div id="orgPattern2" class="org-pattern-style"
-                                                (click)="templateClick($event)">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row db-prop-row">
-                                        <div class="col-xs-6 org-pattern-parent">
-                                            <div id="orgPattern3" class="org-pattern-style"
-                                                (click)="templateClick($event)">
-                                            </div>
-                                        </div>
-                                        <div class="col-xs-6 org-pattern-parent">
-                                            <div id="orgPattern4" class="org-pattern-style"
-                                                (click)="templateClick($event)">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row property-panel-content" style="padding-top: 10px">
-                        <div class="row row-header">
-                            Spacing
-                        </div>
-                        <div class="row" style="padding-top: 8px;padding-bottom: 10px;">
-                            <div class="row db-prop-row">
-                                <div class="col-xs-8 db-col-left" style="width:120px">
-                                    <span class="db-prop-text-style">Horizontal</span>
-                                </div>
-                                <div class="col-xs-4 db-col-right" style="margin-left: 6px;margin-bottom: 10px;">
-                                    <div class="db-text-container" style="width: 77px; margin-left: 10px;">
-                                        <div class="db-text-input">
-                                            <ejs-numerictextbox id="horizontalSpacing" min="20" max="60" step="2"
-                                                width="77px" style="width: 77px;" format="##.##" [value]="30"
-                                                (change)='onhSpacingChange($event)'>
-                                            </ejs-numerictextbox>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row db-prop-row">
-                                <div class="col-xs-8 db-col-left" style="width:120px">
-                                    <span class="db-prop-text-style">Vertical</span>
-                                </div>
-                                <div class="col-xs-4 db-col-right" style="margin-left: 6px;margin-bottom: 10px;">
-                                    <div class="db-text-container" style="width: 77px; margin-left: 10px;">
-                                        <div class="db-text-input">
-                                            <ejs-numerictextbox id="verticalSpacing" min="20" max="60" step="2"
-                                                width="77px" style="width: 77px;" format="##.##" [value]="30"
-                                                (change)='onvSpacingChange($event)'>
-                                            </ejs-numerictextbox>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row db-prop-row"
-                        style="border-top: 1px solid #CBCBCB;padding-top: 10px;margin-top: 10px;">
-                        <ejs-checkbox #checkbox id="expandable" label="Expandable" (change)="onExpandChange($event)">
-                        </ejs-checkbox>
-                    </div>
 
-                    <div class="col-lg-4" id="overview-container"
-                        style=" z-index:-1; width:25%; height: 250px; padding:0px;right:5px;bottom:5px;background:#f7f7f7;position:relative">
-                        <button ejs-button class="overview-toggle-btn" id="toggleOverviewButton"
-                            (click)="toggleOverviewButton()">&#215;</button>
-                        <ejs-overview id="overview" width="100%" sourceID="diagram">
-                        </ejs-overview>
+                            <div class="row" style="padding-top: 10px">
+                                <div class="row row-header">
+                                    Behavior
+                                </div>
+                                <div class="row" style="padding-top: 8px;">
+                                    <div class="row db-prop-row">
+                                        <div class="col-xs-8 db-col-left" style="width:120px">
+                                            <span class="db-prop-text-style">Horizontal Spacing</span>
+                                        </div>
+                                        <div class="col-xs-4 db-col-right"
+                                            style="margin-left: 6px;margin-bottom: 10px;">
+                                            <div class="db-text-container" style="width: 77px; margin-left: 10px;">
+                                                <div class="db-text-input">
+                                                    <ejs-numerictextbox id="horizontalSpacing" min="20" max="60"
+                                                        step="2" width="77px" style="width: 77px;" format="##.##"
+                                                        [value]="30"
+                                                        (change)='onhSpacingChange($event)'></ejs-numerictextbox>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row db-prop-row">
+                                        <div class="col-xs-8 db-col-left" style="width:120px">
+                                            <span class="db-prop-text-style">Vertical Spacing</span>
+                                        </div>
+                                        <div class="col-xs-4 db-col-right"
+                                            style="margin-left: 6px;margin-bottom: 10px;">
+                                            <div class="db-text-container" style="width: 77px; margin-left: 10px;">
+                                                <div class="db-text-input">
+                                                    <ejs-numerictextbox id="verticalSpacing" min="20" max="60" step="2"
+                                                        width="77px" style="width: 77px;" format="##.##" [value]="30"
+                                                        (change)='onvSpacingChange($event)'></ejs-numerictextbox>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row db-prop-row" style="padding-top: 10px;">
+                                <button ejs-button id="reLayoutBtn" className="e-control e-btn e-primary" style="background-color: #0078d4;
+                                border-color: #0078d4;
+                                color: #fff;"
+                                    cssclass='e-flat e-db-primary' (click)='reLayout()'>Re-Layout</button>
+                                <button ejs-button id="addAssistantBtn" iconCss="sf-icon-add-child" 
+                                    className="e-control e-btn e-primary" cssclass='e-flat e-db-primary' aria-disabled="true"
+                                    (click)='addAssistant()' style=" background-color: #0078d4;
+                                    border-color: #0078d4;
+                                    color: #fff; opacity: 0.5; pointer-events: none !important;">Add-Assistant</button>
+                            </div>
+
+                            <div class="row db-prop-row"
+                            style="border-top: 1px solid #CBCBCB;padding-top: 10px;margin-top: 10px;">
+                                <div class="col-xs-4 db-col-left" :style="{ width: '160px', marginLeft: '5px' }">
+
+                                    <button ejs-dropdownbutton id="pictureDropdown"
+                                        [items]='dropDownDataSources.pictureItems' style="border-radius: 0%;"
+                                        iconCss='sf-icon-insert_image' content="Picture" width="100px" popupWidth="160"
+                                        (select)="insertOrRemovePicture($event)"></button>
+
+                                </div>
+                                <div class="col-xs-6 db-col-right" :style="{ width: '160px' }">
+                                    <button ejs-dropdownbutton id="shapeTemplatesDropDown"
+                                        iconCss='e-icons e-properties-2' content="Templates" width='100px'
+                                        height='100px' [items]="dropDownDataSources.templateItems"
+                                        (select)="modifyNodeTemplate($event)"></button>
+                                </div>
+                            </div>
+
+                            <div class="row db-prop-row"
+                            style="border-top: 1px solid #CBCBCB;padding-top: 10px;margin-top: 10px;">
+                            <div class="col-xs-4 db-col-left" style="width: 60%; margin-bottom: 5px;">
+                                <ejs-multiselect id='multiCheckbox' #checkbox
+                                [dataSource]='dropDownDataSources.fieldsMultiListItems'  [value]='multiCheckboxValue' 
+                                [showClearButton]="false" [showDropDownIcon]="true"
+                                [fields]='dropDownDataSources.checkBoxFields' placeholder='Fields' [mode]='mode'
+                                [filterBarPlaceholder]='filterPlaceholder'
+                                [popupHeight]='popHeight'
+                                (change)="checkboxmodifyNodeTemplate($event)">
+                            </ejs-multiselect>
+                            </div>
+                            <div class="col-xs-4 db-col-right" style="margin-left: 10px;">
+                                <button ejs-button cssclass='db-search-btn' className="e-control e-btn e-primary" iconCss='e-icons e-search'
+                                id="searchBtn" style="font-size: 10px; background-color: #0078d4;
+                                border-color: #0078d4;
+                                color: #fff;" (click)="searchBtn()">Search</button>
+                            </div>
+                            </div>
+
+                            <div class="row db-prop-row"
+                                style="border-top: 1px solid #CBCBCB;padding-top: 10px;margin-top: 10px;">
+                                <ejs-checkbox #checkbox id="expandable" label="Expandable" (change)="onExpandChange($event)">
+                                </ejs-checkbox>
+                            </div>
+
+                            <div class="row db-prop-row">
+                                <div class="col-xs-2 db-col-right db-prop-text-style" style="padding-top: 6px; margin-left: 10px;">
+                                    <span class="db-prop-text-style">Zoom</span>
+                                </div>
+                                <div class="col-xs-6 db-col-left" style="padding-right: 10px">
+                                    <ejs-slider id="zoomslider" type="MinRange" min="30" max="300" [value]="zoomLevel" (change)="updateZoomLevel($event)" >
+                                    </ejs-slider>
+                                </div>
+                                <div class="col-xs-2 db-col-right">
+                                    <input id="zoomSliderText" type="text" [value]="zoomLevel" readOnly class="db-readonly-input" />
+                                </div>
+
+                                <div class="col-lg-4" id="overview-container"
+                                    style=" z-index:-1; width:25%; height: 350px; padding:0px;right:5px;bottom:5px;background:#f7f7f7;position:relative">
+                                    <button ejs-button class="overview-toggle-btn" id="toggleOverviewButton"
+                                        (click)="toggleOverviewButton()">&#215;</button>
+                                    <ejs-overview id="overview" width="100%" sourceID="diagram">
+                                    </ejs-overview>
+                                </div>
+                            </div>
+
+                            
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div>
         <ejs-dialog #Dialog id="defaultDialog" [header]='header' [animationSettings]='animationSettings'
             [showCloseIcon]='showCloseIcon' [target]='target' [width]='width' [visible]="visible" isModal='true'
@@ -374,23 +370,12 @@
                         </div>
                     </div>
                     <div class="row db-dialog-prop-row">
-                        <div class="col-xs-6 db-col-left">
-                            <div class="row">
-                                Format
-                            </div>
-                            <div class="row db-dialog-child-prop-row">
-                                <ejs-dropdownlist id="exportFormat" [dataSource]='dropDownDataSources.fileFormats'
-                                    [(value)]="formatValue"></ejs-dropdownlist>
-                            </div>
+                        <div class="row">
+                            Format
                         </div>
-                        <div class="col-xs-6 db-col-right">
-                            <div class="row">
-                                Region
-                            </div>
-                            <div class="row db-dialog-child-prop-row">
-                                <ejs-dropdownlist id="exportRegion" [dataSource]='dropDownDataSources.diagramRegions'
-                                    [(value)]="regionsValue"></ejs-dropdownlist>
-                            </div>
+                        <div class="row db-dialog-child-prop-row">
+                            <ejs-dropdownlist id="exportFormat" [dataSource]='dropDownDataSources.fileFormats'
+                                [(value)]="formatValue"></ejs-dropdownlist>
                         </div>
                     </div>
                 </div>
@@ -400,7 +385,7 @@
     <div class="searchDialog">
         <ejs-dialog #searchDialog id="searchDialog" [header]='searchHeader' [animationSettings]='animationSettings'
             [showCloseIcon]='showCloseIcon' [target]='searchTarget' [width]='width' [position]="position"
-            [visible]="visible" isModal='true' [buttons]='searchButtons'>
+            [visible]="visible" [isModal] ="false" [buttons]='searchButtons'>
             <ng-template #content>
                 <div id="searchDialogContent">
                     <div class="row">
@@ -418,90 +403,23 @@
             </ng-template>
         </ejs-dialog>
     </div>
-    <div class="fileUploadDialog">
-        <ejs-dialog id="fileUploadDialog" #fileUploadDialog width='500px' height='485px' header='Upload File'
-            [target]='target' isModal="true" [animationSettings]='animationSettings' [buttons]='fileUploadButtons'
-            showCloseIcon='true' allowDragging='true' [visible]='visible'>
-            <ng-template #content>
-                <div id="uploadDialogContent" class="db-upload-content firstPage">
-                    <div id='uploadInformationDiv' class="row db-dialog-prop-row" style="margin-top: 0px;">
-                        <div class="row">
-                            <div class="row" style="font-size: 12px;font-weight: 500;color: black;">
-                                <div class="db-info-text">
-                                    Choose Format
-                                </div>
-                                <div class='db-format-type' style="display: none">
-                                </div>
-                            </div>
-                            <div class="row db-dialog-child-prop-row">
-                                <div class="col-xs-3 db-prop-col-style">
-                                    <ejs-radiobutton id='csvFormat' label="csv" name="uploadFileFormat" checked="true"
-                                        (change)='downloadFormatChange($event)'>
-                                    </ejs-radiobutton>
-                                </div>
-                                <div class="col-xs-3 db-prop-col-style">
-                                    <ejs-radiobutton id='xmlFormat' label="xml" name="uploadFileFormat"
-                                        (change)='downloadFormatChange($event)'>
-                                    </ejs-radiobutton>
-                                </div>
-                                <div class="col-xs-3 db-prop-col-style">
-                                    <ejs-radiobutton id='jsonFormat' label="json" name="uploadFileFormat"
-                                        (change)='downloadFormatChange($event)'>
-                                    </ejs-radiobutton>
-                                </div>
-                            </div>
+    
+    <div style="display:none;">
+        <ejs-uploader #defaultupload id='defaultfileupload' [asyncSettings]='path' (success)='onUploadSuccess($event)'
+            (failure)='onUploadFailure($event)' (progress)='onUploadFileSelected($event)'></ejs-uploader>
+    </div>
 
-                        </div>
-                        <div class="row db-dialog-prop-row"
-                            style="padding: 10px; background-color: #FFF7B5; border: 1px solid #FFF7B5">
-                            <div class="db-info-parent" style="width: 10%; background-color:transparent; height: 60px;">
-                            </div>
-                            <div style="float:left; width: calc(90% - 5px)">
-                                <ul style="padding-left: 25px; margin-bottom: 0px">
-                                    <li style="margin-bottom: 5px">
-                                        <span id="descriptionText1"
-                                            style="color: #515151;font-size: 11px;line-height: 15px;">Make
-                                            sure that the every column of your table has a header</span>
-                                    </li>
-                                    <li>
-                                        <span id="descriptionText2"
-                                            style="color: #515151;font-size: 11px;line-height: 15px;">Each
-                                            employee should have a reporting person (except for top most employee of the
-                                            organization)
-                                            and it should be indicated by any field from your data source.</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="row db-dialog-prop-row">
-                            <button id="btnDownloadFile" #btnDownloadFile ejs-button [content]='buttonContent'
-                                (click)='downloadExampleFiles($event)'>
-                            </button>
-                        </div>
-                        <div class="row">
-                            <div id="dropArea">
-                                <span id="dropRegion" class="droparea"> Drop files here or
-                                    <a href="" id="browseFile">
-                                        <u>Browse</u>
-                                    </a>
-                                </span>
-                                <ejs-uploader #manyFileUpload id='manyFileUpload' (progress)='onUploadProgress($event)'
-                                    [asyncSettings]='path' (success)='onFileUploadSuccess($event)'
-                                    [allowedExtensions]='extensionType'>
-                                </ejs-uploader>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </ng-template>
-        </ejs-dialog>
+    <div className="pictureUpload" style="display:none;">
+        <ejs-uploader #pictureUpload id='pictureUpload' class="pictureUpload" [asyncSettings]='path'
+            (success)='onPictureUploadSuccess($event)'></ejs-uploader>
     </div>
 </div>
-<div style="display:none;">
-    <ejs-uploader #defaultupload id='defaultfileupload' [asyncSettings]='path' (success)='onUploadSuccess($event)'
-        (failure)='onUploadFailure($event)' (progress)='onUploadFileSelected($event)'></ejs-uploader>
-</div>
-<div className="pictureUpload" style="display:none;">
-    <ejs-uploader #pictureUpload id='pictureUpload' class="pictureUpload" [asyncSettings]='path'
-        (success)='onPictureUploadSuccess($event)'></ejs-uploader>
+
+<div class="sb-content-overlay" style="display: none;">
+    <div class="sb-loading">
+        <svg class="circular" height="40" width="40">
+            <circle class="loadingPath" cx="25" cy="25" r="20" fill="none" stroke-width="6" stroke-miterlimit="10">
+            </circle>
+        </svg>
+    </div>
 </div>

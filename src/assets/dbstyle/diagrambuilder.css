@@ -71,6 +71,8 @@ input, button, select, textarea {
 
 .db-diagram-name-container.db-edit-name #diagramEditable {
     display: block;
+    background:white;
+    color: #000000;
 }
 
 .db-diagram-name {
@@ -499,6 +501,7 @@ input, button, select, textarea {
     float: right;
     color: #999999;
     font-size: 12px;
+    margin-left:40px;
 }
 
 /* Menu Bar Customization - End */
@@ -2044,7 +2047,14 @@ input.e-input::selection,
     outline: none;
 }
 
+.e-control .e-btn .e-primary{
+    background-color: #0078d4;
+    border-color: #0078d4;
+    color: #fff;}
+
+
 /* General Customization - End */
+
 
 .db-html-font-medium {
     color: #515151;
@@ -2055,4 +2065,16 @@ input.e-input::selection,
 .db-html-font-normal {
     color: #515151;
     font-size: 12px;
+}
+
+.sb-content-overlay {
+    z-index: 10000022;
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    overflow: hidden;
+    pointer-events: none;
+    left: 0px;
 }

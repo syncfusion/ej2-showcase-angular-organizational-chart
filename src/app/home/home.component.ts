@@ -24,7 +24,8 @@ import { ChangeEventArgs, SelectedEventArgs, SliderChangeEventArgs, UploaderComp
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class HomeComponent implements AfterViewInit {
 

@@ -58,12 +58,15 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "buildTarget": "Orgchart:build"
+          },
           "configurations": {
             "production": {
-              "browserTarget": "Orgchart:build:production"
+              "buildTarget": "Orgchart:build:production"
             },
             "development": {
-              "browserTarget": "Orgchart:build:development"
+              "buildTarget": "Orgchart:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -71,7 +74,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "Orgchart:build"
+            "buildTarget": "Orgchart:build"
           }
         },
         "test": {
